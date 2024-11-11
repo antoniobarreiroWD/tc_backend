@@ -26,12 +26,50 @@ const login = async (req, res) => {
   });
 };
 
-const verify = async (req, res) => {
-  res.json(req.user);
-};
+const getProfile = async (req, res) => {
+  const user = await User.findById(req.user._id)
+
+  res.status(200).json({ message: 'User has been verified', user })
+}
+
+const editUser = async (req, res, next) => {
+  try {
+      const { email, username } = req.body
+
+      const updatedUser = await User.findByIdAndUpdate(
+          req.user._id, 
+          { email, username }, 
+          { new: true }
+      )
+
+      if(!updatedUser) {
+          res.status(400).json({ message: 'User not found' })
+      }
+
+      res.status(200).json({ message:'User has been updated', user: updatedUser })
+  } catch (error) {
+      next(error)
+  }
+}
+
+const deleteUser = async (req, res) => {
+  try {
+      const deletedUser = User.findByIdAndDelete(req.user._id)
+
+      if(!deletedUser) {
+          res.status(400).json({ message: 'User not found' })
+      }
+
+      res.status(200).json({ message: 'User has been deleted' })
+  } catch (error) {
+      next(error)
+  }
+}
 
 module.exports = {
   signup,
   login,
-  verify
+  getProfile,
+  editUser,
+  deleteUser
 };
