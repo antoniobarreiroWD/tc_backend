@@ -18,9 +18,7 @@ const getOneRestaurant = async (req, res, next) => {
       return res.status(400).json({ msg: 'Invalid restaurant id!' });
     }
 
-    const restaurant = await Restaurant.findById(restaurant_id).select(
-      '-createdAt -updatedAt'
-    );
+    const restaurant = await Restaurant.findById(restaurant_id).select('-createdAt -updatedAt');
     if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found!' });
     }
@@ -31,100 +29,32 @@ const getOneRestaurant = async (req, res, next) => {
 };
 
 const createOneRestaurant = async (req, res, next) => {
-  const {
-    name,
-    neighborhood,
-    address,
-    latlng,
-    photograph,
-    image,
-    cuisine_type,
-    operating_hours,
-    reviews,
-  } = req.body;
+  const { name, address, image } = req.body;
+
+  if (!name || !address || !image) {
+    return res.status(400).json({ msg: 'Please fill in all required fields!' });
+  }
 
   try {
-    
-    if (
-      !name ||
-      !neighborhood ||
-      !address ||
-      !latlng ||
-      !photograph ||
-      !image ||
-      !cuisine_type ||
-      !operating_hours
-    ) {
-      return res.status(400).json({ msg: 'Please fill in all fields!' });
-    }
-
-    await Restaurant.create({
-      name,
-      neighborhood,
-      address,
-      latlng,
-      photograph,
-      image,
-      cuisine_type,
-      operating_hours,
-      reviews,
-    });
-
-    res.sendStatus(201);
+    console.log("Datos recibidos:", req.body); 
+    const restaurant = await Restaurant.create(req.body);
+    res.status(201).json(restaurant);
   } catch (err) {
-    next(err);
+    console.error("Error en createOneRestaurant:", err);
+    next(err);  
   }
 };
+
 
 const editOneRestaurant = async (req, res, next) => {
   try {
     const { restaurant_id } = req.params;
-    const {
-      name,
-      neighborhood,
-      address,
-      latlng,
-      photograph,
-      image,
-      cuisine_type,
-      operating_hours,
-      reviews,
-    } = req.body;
-
-    
-    if (
-      !name ||
-      !neighborhood ||
-      !address ||
-      !latlng ||
-      !photograph ||
-      !image ||
-      !cuisine_type ||
-      !operating_hours
-    ) {
-      return res.status(400).json({ msg: 'Please fill in all fields!' });
-    }
 
     if (!Types.ObjectId.isValid(restaurant_id)) {
       return res.status(400).json({ msg: 'Invalid restaurant id!' });
     }
 
-    const restaurant = await Restaurant.findByIdAndUpdate(
-      restaurant_id,
-      {
-        name,
-        neighborhood,
-        address,
-        latlng,
-        photograph,
-        image,
-        cuisine_type,
-        operating_hours,
-        reviews,
-      },
-      { new: true }
-    ).select('-createdAt -updatedAt');
-
+    const restaurant = await Restaurant.findByIdAndUpdate(restaurant_id, req.body, { new: true }).select('-createdAt -updatedAt');
     if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found!' });
     }

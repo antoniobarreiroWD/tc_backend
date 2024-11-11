@@ -24,21 +24,17 @@ const restaurantSchema = new Schema(
     latlng: {
       lat: {
         type: Number,
-        required: true,
       },
       lng: {
         type: Number,
-        required: true,
       },
     },
     image: {
-      type: String,
-      default:
-        "https://unsplash.com/es/fotos/render-3d-del-vestibulo-y-la-recepcion-del-hotel-de-lujo-TkYAy9_PR_E",
+      type: String, 
+      default: "https://unsplash.com/es/fotos/render-3d-del-vestibulo-y-la-recepcion-del-hotel-de-lujo-TkYAy9_PR_E",
     },
     cuisine_type: {
       type: String,
-      required: true,
       trim: true,
     },
     operating_hours: {
